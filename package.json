@@ -48,7 +48,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "selenium-webdriver": "^4.25.0"
+    "selenium-webdriver": "^4.46.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
