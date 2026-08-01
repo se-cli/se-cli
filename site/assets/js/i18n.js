@@ -25,6 +25,8 @@
       'footer.github': 'GitHub',
       'footer.issues': 'Issues',
       'footer.npm': 'npm',
+      'footer.ecosystem': 'Ecosystem',
+      'footer.vscodeExt': 'VS Code Ext',
       'footer.copy': 'Apache-2.0 · Built with inspiration from playwright-cli',
       'footer.copyShort': 'Apache-2.0 · se-cli',
       // ── breadcrumb ──
@@ -41,6 +43,7 @@
       'bc.codegen': 'Code Generation',
       'bc.ai': 'AI Agents',
       'bc.troubleshooting': 'Troubleshooting',
+      'bc.ecosystem': 'Ecosystem',
       'bc.matrix': 'Feature Matrix',
       'bc.changelog': 'Changelog',
       // ── copy buttons ──
@@ -111,6 +114,17 @@
       'home.ctaTitle': 'Start automating with fewer tokens',
       'home.ctaText': 'Install se-cli and let your agent drive any browser.',
       'home.ctaSpec': 'Read the Spec',
+      'home.ecosystem': 'Ecosystem',
+      'home.ecosystemLead': 'Three packages that work together — pick the one that fits your workflow, or combine them all.',
+      'home.ecoCliTitle': 'se-cli',
+      'home.ecoCliDesc': 'The core CLI + daemon. Drives Chrome, Edge, and Firefox with aria snapshots and element refs. Works with any shell or AI agent.',
+      'home.ecoMcpTitle': 'se-mcp',
+      'home.ecoMcpDesc': 'Thin MCP server wrapper. Exposes 50+ browser automation tools to VS Code, Claude Desktop, Cursor, and any MCP-aware client via stdio.',
+      'home.ecoVscodeTitle': 'se-extension-vscode',
+      'home.ecoVscodeDesc': 'VS Code extension with a browser panel, status bar, one-click commands, and automatic MCP server registration for Copilot agents.',
+      'home.ecoVscodeInstall': 'Search "se-cli" in Extensions',
+      'home.ecoMarketplace': 'Marketplace',
+      'home.ecoDocs': 'Docs',
 
       // ════════════════════════════════════════════════════════════
       // DOCS INDEX (docs/index.html)
@@ -137,6 +151,8 @@
       'docs.aiDesc': 'SKILL.md installation, Claude Code / Cursor integration, the CLI-vs-MCP token tradeoff, and the MCP Server.',
       'docs.troubleshooting': 'Troubleshooting',
       'docs.troubleshootingDesc': 'Error codes, daemon cleanup, driver version drift, and the most common FAQ answers.',
+      'docs.ecosystem': 'Ecosystem',
+      'docs.ecosystemDesc': 'se-mcp for MCP clients, se-extension-vscode for VS Code, and how all three packages fit together.',
 
       // ════════════════════════════════════════════════════════════
       // GETTING STARTED (docs/getting-started.html)
@@ -913,6 +929,8 @@
       'footer.github': 'GitHub',
       'footer.issues': 'Issues',
       'footer.npm': 'npm',
+      'footer.ecosystem': '生态系统',
+      'footer.vscodeExt': 'VS Code 扩展',
       'footer.copy': 'Apache-2.0 · 灵感来自 playwright-cli',
       'footer.copyShort': 'Apache-2.0 · se-cli',
       // ── breadcrumb ──
@@ -929,6 +947,7 @@
       'bc.codegen': '代码生成',
       'bc.ai': 'AI 代理',
       'bc.troubleshooting': '故障排除',
+      'bc.ecosystem': '生态系统',
       'bc.matrix': '功能矩阵',
       'bc.changelog': '更新日志',
       // ── copy buttons ──
@@ -997,6 +1016,17 @@
       'home.ctaTitle': '用更少 Token 开始自动化',
       'home.ctaText': '安装 se-cli，让你的代理驱动任何浏览器。',
       'home.ctaSpec': '阅读规范',
+      'home.ecosystem': '生态系统',
+      'home.ecosystemLead': '三个协同工作的包 — 选择适合你工作流的那个，或者组合使用。',
+      'home.ecoCliTitle': 'se-cli',
+      'home.ecoCliDesc': '核心 CLI + 守护进程。通过 aria 快照和元素引用驱动 Chrome、Edge 和 Firefox。适用于任何终端或 AI 代理。',
+      'home.ecoMcpTitle': 'se-mcp',
+      'home.ecoMcpDesc': '轻量 MCP 服务器封装。通过 stdio 向 VS Code、Claude Desktop、Cursor 及任何支持 MCP 的客户端暴露 50+ 浏览器自动化工具。',
+      'home.ecoVscodeTitle': 'se-extension-vscode',
+      'home.ecoVscodeDesc': 'VS Code 扩展，提供浏览器面板、状态栏、一键命令，并为 Copilot 代理自动注册 MCP 服务器。',
+      'home.ecoVscodeInstall': '在扩展中搜索 "se-cli"',
+      'home.ecoMarketplace': '应用市场',
+      'home.ecoDocs': '文档',
 
       // ── docs index ──
       'docs.metaDesc': 'se-cli 文档索引 — 安装、命令、配置、会话、快照、代码生成、AI 代理和故障排除。',
@@ -1021,6 +1051,8 @@
       'docs.aiDesc': 'SKILL.md 安装、Claude Code / Cursor 集成、CLI 与 MCP 的 Token 权衡和 MCP 服务器。',
       'docs.troubleshooting': '故障排除',
       'docs.troubleshootingDesc': '错误码、守护进程清理、驱动版本漂移和最常见 FAQ 答案。',
+      'docs.ecosystem': '生态系统',
+      'docs.ecosystemDesc': 'se-mcp 用于 MCP 客户端，se-extension-vscode 用于 VS Code，以及三个包如何协同工作。',
 
       // ── getting started ──
       'gs.metaDesc': '安装 se-cli，运行第一个会话，了解 CLI、守护进程、套接字和引用概念模型。',
@@ -1763,11 +1795,14 @@
     'Toggle menu': { zh: '切换菜单', key: 'nav.toggleMenu' },
     'Issues': { zh: 'Issues', key: 'footer.issues' },
     'npm': { zh: 'npm', key: 'footer.npm' },
+    'Ecosystem': { zh: '生态系统', key: 'footer.ecosystem' },
+    'VS Code Ext': { zh: 'VS Code 扩展', key: 'footer.vscodeExt' },
     'Apache-2.0 · Built with inspiration from playwright-cli': { zh: 'Apache-2.0 · 灵感来自 playwright-cli', key: 'footer.copy' },
     'Apache-2.0 · se-cli': { zh: 'Apache-2.0 · se-cli', key: 'footer.copyShort' },
     'Home': { zh: '首页', key: 'bc.home' },
     'Get Started': { zh: '快速开始', key: 'home.getStarted' },
     'Documentation': { zh: '文档', key: 'docs.title' },
+    'Ecosystem': { zh: '生态系统', key: 'footer.ecosystem' },
     'Roadmap': { zh: '路线图', key: 'rm.title' },
     'Test Pages': { zh: '测试页', key: 'tp.title' },
     'Copy': { zh: '复制', key: 'btn.copy' }

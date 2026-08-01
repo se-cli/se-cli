@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="se-cli ecosystem — the core CLI, se-mcp MCP server wrapper, and se-extension-vscode VS Code extension. Three packages that share the same daemon and WebDriver instance." />
+  <meta name="theme-color" content="#22C55E" />
+  <title>Ecosystem — se-cli Docs</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo" aria-label="se-cli home">
+        <img src="../assets/img/favicon.svg" alt="" width="28" height="28" />
+        <span>se-cli</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="../docs/index.html" class="current">Docs</a>
+        <a href="../roadmap/index.html">Roadmap</a>
+        <a href="../test-pages/index.html">Test Pages</a>
+        <a href="https://github.com/se-cli/se-cli" class="nav-gh" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <h4 data-i18n="sidebar.getStarted">Get started</h4>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="commands.html">Command Reference</a>
+      <a href="configuration.html">Configuration</a>
+      <h4 data-i18n="sidebar.guides">Guides</h4>
+      <a href="sessions.html">Sessions &amp; Browsers</a>
+      <a href="storage-state.html">Storage &amp; State</a>
+      <a href="snapshots-refs.html">Snapshots &amp; Refs</a>
+      <a href="codegen.html">Code Generation</a>
+      <a href="ai-agents.html">AI Agents</a>
+      <h4 data-i18n="sidebar.reference">Reference</h4>
+      <a href="ecosystem.html" class="current" data-i18n="bc.ecosystem">Ecosystem</a>
+      <a href="troubleshooting.html">Troubleshooting</a>
+    </aside>
+
+    <main class="docs-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../index.html" data-i18n="bc.home">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="index.html" data-i18n="bc.docs">Docs</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current" data-i18n="bc.ecosystem">Ecosystem</span>
+      </nav>
+
+      <h1>Ecosystem</h1>
+      <p class="docs-subtitle">The se-cli ecosystem — three packages that work together for CLI, MCP, and VS Code workflows.</p>
+
+      <h2 id="overview">Overview</h2>
+      <p>The se-cli ecosystem follows the Playwright multi-repo pattern. Three independent repositories each serve a different entry point — the core CLI, an MCP server wrapper, and a VS Code extension. All three share the same daemon architecture and WebDriver instance.</p>
+
+      <h2 id="se-mcp">se-mcp</h2>
+
+      <h3 id="se-mcp-what">What is se-mcp?</h3>
+      <p>se-mcp is a thin MCP (Model Context Protocol) server wrapper around se-cli. It exposes 50+ browser automation tools to MCP-aware AI clients like VS Code, Claude Desktop, Cursor, and Claude Code via stdio JSON-RPC 2.0.</p>
+      <ul>
+        <li>Package: <code>@browsers-cli/se-mcp</code> on npm</li>
+        <li>Repository: <a href="https://github.com/se-cli/se-mcp" target="_blank" rel="noopener">https://github.com/se-cli/se-mcp</a></li>
+      </ul>
+
+      <h3 id="se-mcp-install">Installation</h3>
+      <div class="code-block"><div class="code-header"><span class="code-lang">bash</span></div>
+<pre><code>npx @browsers-cli/se-mcp</code></pre></div>
+      <p>No global install needed — <code>npx</code> downloads and runs the latest version automatically.</p>
+
+      <h3 id="se-mcp-config">Configuration</h3>
+      <p>Add se-mcp to your MCP client configuration. The server name is <code>se-cli</code>.</p>
+
+      <p><strong>VS Code</strong> (settings.json):</p>
+      <div class="code-block"><div class="code-header"><span class="code-lang">json</span></div>
+<pre><code>{
+  "mcp.servers": {
+    "se-cli": {
+      "command": "npx",
+      "args": ["-y", "@browsers-cli/se-mcp"]
+    }
+  }
+}</code></pre></div>
+
+      <p><strong>Claude Desktop</strong> (claude_desktop_config.json):</p>
+      <div class="code-block"><div class="code-header"><span class="code-lang">json</span></div>
+<pre><code>{
+  "mcpServers": {
+    "se-cli": {
+      "command": "npx",
+      "args": ["-y", "@browsers-cli/se-mcp"]
+    }
+  }
+}</code></pre></div>
+
+      <p><strong>Cursor</strong> (~/.cursor/mcp.json):</p>
+      <div class="code-block"><div class="code-header"><span class="code-lang">json</span></div>
+<pre><code>{
+  "mcpServers": {
+    "se-cli": {
+      "command": "npx",
+      "args": ["-y", "@browsers-cli/se-mcp"]
+    }
+  }
+}</code></pre></div>
+
+      <h3 id="se-mcp-tools">Tool Catalog</h3>
+      <p>se-mcp exposes 50+ MCP tools covering the full browser automation lifecycle. All tools are prefixed with <code>browser_</code>.</p>
+      <table class="cmd-table">
+        <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>browser_open</code></td><td>Start a browser session (Chrome, Edge, or Firefox)</td></tr>
+          <tr><td><code>browser_close</code></td><td>Close a browser session and stop the daemon</td></tr>
+          <tr><td><code>browser_navigate</code></td><td>Navigate to a URL</td></tr>
+          <tr><td><code>browser_click</code></td><td>Click an element by ref or CSS selector</td></tr>
+          <tr><td><code>browser_fill</code></td><td>Fill an input field with text</td></tr>
+          <tr><td><code>browser_snapshot</code></td><td>Take an accessibility (aria) snapshot with element refs</td></tr>
+          <tr><td><code>browser_screenshot</code></td><td>Take a screenshot of the page or element</td></tr>
+          <tr><td><code>browser_eval</code></td><td>Execute JavaScript in the page</td></tr>
+          <tr><td><code>browser_tab_list</code></td><td>List all open tabs</td></tr>
+          <tr><td><code>browser_cookie_list</code></td><td>List all cookies</td></tr>
+          <tr><td><code>browser_state_save</code></td><td>Save browser state to JSON</td></tr>
+          <tr><td><code>browser_expect</code></td><td>Assert conditions (visible, hidden, text, value, etc.)</td></tr>
+          <tr><td><code>browser_route</code></td><td>Mock a network route</td></tr>
+          <tr><td><code>browser_console</code></td><td>Get buffered console messages and JS errors</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="se-extension-vscode">se-extension-vscode</h2>
+
+      <h3 id="vscode-what">What is se-extension-vscode?</h3>
+      <p>A Visual Studio Code extension for se-cli. It provides a sidebar browser panel that renders aria snapshots and screenshots, a status bar reflecting daemon state, one-click commands for common browser actions, and automatic registration of the se-cli MCP server for Copilot agents.</p>
+      <ul>
+        <li>Publisher: <code>se-cli</code> on VS Code Marketplace</li>
+        <li>Repository: <a href="https://github.com/se-cli/se-extension-vscode" target="_blank" rel="noopener">https://github.com/se-cli/se-extension-vscode</a></li>
+      </ul>
+
+      <h3 id="vscode-install">Installation</h3>
+      <p>Search "se-cli" in the Extensions view (Ctrl+Shift+X).</p>
+      <p>Or install from the command line:</p>
+      <div class="code-block"><div class="code-header"><span class="code-lang">bash</span></div>
+<pre><code>code --install-extension se-cli.se-extension-vscode</code></pre></div>
+
+      <h3 id="vscode-features">Features</h3>
+      <ul>
+        <li><strong>MCP server integration</strong> — se-cli is registered as a Model Context Protocol server via <code>contributes.mcpServers</code>, exposing 40+ browser automation tools to VS Code agents.</li>
+        <li><strong>Browser panel</strong> — a webview in the activity bar showing the last aria snapshot as a tree, the last screenshot, quick action buttons (Open, Close, Navigate, Snapshot, Screenshot, Click, Fill), and a command history.</li>
+        <li><strong>Status bar</strong> — live daemon status (running browser / stopped). Click to open a quick pick of all commands.</li>
+        <li><strong>Auto-snapshot</strong> — optionally take an aria snapshot after every navigation or interaction so the panel always reflects the current page.</li>
+        <li><strong>Works with or without a global install</strong> — uses a configured <code>se-cli</code> binary, a global install on PATH, or falls back to <code>npx @browsers-cli/se-cli</code>.</li>
+      </ul>
+
+      <h3 id="vscode-config">Configuration</h3>
+      <table class="env-table">
+        <thead><tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>se-cli.browser</code></td><td><code>chrome</code> | <code>edge</code> | <code>firefox</code></td><td class="env-example">chrome</td><td class="env-desc">Browser to launch when starting a session.</td></tr>
+          <tr><td><code>se-cli.headless</code></td><td><code>boolean</code></td><td class="env-example">false</td><td class="env-desc">Run the browser in headless mode. Disable to show the browser window.</td></tr>
+          <tr><td><code>se-cli.session</code></td><td><code>string</code></td><td class="env-example">default</td><td class="env-desc">Named session for browser isolation / parallel sessions.</td></tr>
+          <tr><td><code>se-cli.autoSnapshot</code></td><td><code>boolean</code></td><td class="env-example">true</td><td class="env-desc">Auto-take an aria snapshot after navigation/interaction.</td></tr>
+          <tr><td><code>se-cli.cliPath</code></td><td><code>string</code></td><td class="env-example">""</td><td class="env-desc">Path to the se-cli binary. Empty = auto-detect, then npx fallback.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="vscode-commands">Commands</h3>
+      <table class="cmd-table">
+        <thead><tr><th>Command</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>se-cli.openBrowser</code></td><td>Pick a browser and start a daemon session.</td></tr>
+          <tr><td><code>se-cli.closeBrowser</code></td><td>Stop the daemon and close the browser.</td></tr>
+          <tr><td><code>se-cli.navigate</code></td><td>Run <code>goto &lt;url&gt;</code>.</td></tr>
+          <tr><td><code>se-cli.snapshot</code></td><td>Run <code>snapshot</code> and render the tree in the panel.</td></tr>
+          <tr><td><code>se-cli.screenshot</code></td><td>Run <code>screenshot</code> and display the image in the panel.</td></tr>
+          <tr><td><code>se-cli.click</code></td><td>Click by ref (<code>e1</code>) or CSS selector.</td></tr>
+          <tr><td><code>se-cli.fill</code></td><td>Fill an input by ref/selector with text.</td></tr>
+          <tr><td><code>se-cli.runCommand</code></td><td>Quick pick of all available commands.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="architecture">Architecture</h2>
+      <p>All three packages share the same se-cli daemon, which holds the WebDriver instance. The CLI sends one JSON line per command over a Unix socket (or Windows named pipe). se-mcp wraps the MCP server from se-cli, translating JSON-RPC 2.0 calls into CLI args. The VS Code extension spawns the CLI directly for its commands and registers the MCP server for Copilot agent integration.</p>
+      <div class="arch-diagram">
+<pre><code>┌─────────────┐   shell    ┌──────────┐   JSON    ┌──────────┐   WebDriver  ┌────────┐
+│  AI Agent   │───────────►│  se-cli  │─────────►│  Daemon  │─────────────►│Browser │
+│  (shell)    │            │  CLI     │  socket   │          │              │        │
+└─────────────┘            └────┬─────┘           └──────────┘              └────────┘
+                                │
+                                │ require()
+                                ▼
+┌─────────────┐  JSON-RPC  ┌──────────┐
+│  VS Code    │◄──────────►│  se-mcp  │
+│  Copilot    │  stdio     │  wrapper │
+└─────────────┘            └──────────┘
+                                │
+                                │ spawns
+┌─────────────┐  spawns     ┌──────────┐
+│  VS Code    │────────────►│  se-cli  │
+│  Extension  │             │  CLI     │
+│  Panel      │             └──────────┘
+└─────────────┘</code></pre>
+      </div>
+
+      <h2 id="which-package">Which package should I use?</h2>
+      <div class="table-wrap">
+        <table class="cmp-table">
+          <thead><tr><th>Use case</th><th>Package</th></tr></thead>
+          <tbody>
+            <tr><td>Shell scripts, terminal automation</td><td>se-cli</td></tr>
+            <tr><td>Claude Code, any shell-based AI agent</td><td>se-cli</td></tr>
+            <tr><td>Claude Desktop, Cursor (MCP clients)</td><td>se-mcp</td></tr>
+            <tr><td>VS Code with Copilot agents</td><td>se-extension-vscode</td></tr>
+            <tr><td>VS Code with browser panel UI</td><td>se-extension-vscode</td></tr>
+            <tr><td>Programmatic MCP server in Node.js</td><td>se-mcp</td></tr>
+            <tr><td>All of the above</td><td>se-cli + se-mcp + se-extension-vscode</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="../assets/img/favicon.svg" alt="" width="24" height="24" />
+        <span>se-cli</span>
+      </div>
+      <div class="footer-links">
+        <a href="../docs/index.html">Docs</a>
+        <a href="../roadmap/index.html">Roadmap</a>
+        <a href="../test-pages/index.html">Test Pages</a>
+        <a href="https://github.com/se-cli/se-cli">GitHub</a>
+        <a href="https://github.com/se-cli/se-cli/issues">Issues</a>
+        <a href="https://www.npmjs.com/package/@browsers-cli/se-cli">npm</a>
+      </div>
+      <div class="footer-copy">Apache-2.0 · se-cli</div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/nav.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+</body>
+</html>

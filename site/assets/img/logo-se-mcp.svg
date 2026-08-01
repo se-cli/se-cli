@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 128" width="440" height="128" role="img" aria-label="se-mcp logo">
+  <!-- Primary logo for light backgrounds: green icon + wordmark -->
+  <!-- Icon: green rounded square + white >_ + MCP connection nodes -->
+  <rect x="6" y="6" width="116" height="116" rx="28" fill="#22C55E"/>
+  <path d="M32 42 L56 64 L32 86" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="62" y1="86" x2="78" y2="86" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+  <!-- MCP connection nodes -->
+  <circle cx="96" cy="40" r="4" fill="#FFFFFF" opacity="0.85"/>
+  <circle cx="96" cy="64" r="4" fill="#FFFFFF" opacity="0.85"/>
+  <circle cx="96" cy="88" r="4" fill="#FFFFFF" opacity="0.85"/>
+  <line x1="84" y1="42" x2="93" y2="40" stroke="#FFFFFF" stroke-width="1.8" opacity="0.45"/>
+  <line x1="84" y1="64" x2="93" y2="64" stroke="#FFFFFF" stroke-width="1.8" opacity="0.45"/>
+  <line x1="84" y1="86" x2="93" y2="88" stroke="#FFFFFF" stroke-width="1.8" opacity="0.45"/>
+  <!-- Wordmark: se- (dark) + mcp (green) -->
+  <text x="140" y="88" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="60" font-weight="700" letter-spacing="-1">
+    <tspan fill="#111827">se-</tspan><tspan fill="#22C55E">mcp</tspan>
+  </text>
+</svg>
