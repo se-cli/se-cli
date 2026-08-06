@@ -692,18 +692,19 @@ autonomous workflows). Both share the same underlying tool implementation.
 Extend browser coverage and connection capabilities. This is the area Playwright will
 never match — emphasized as a differentiated stronghold rather than a passing "Core" note.
 
-- [ ] **--browser=safari**: real Safari via `safaridriver` (macOS only, no headless/BiDi/CDP)
-- [ ] **--endpoint=<url>**: connect to Selenium Grid 4 or remote WebDriver
-- [ ] **--browser-binary=<path>**: custom browser binary (360, UC, QQ, Brave, Electron-embedded, QtWebEngine, domestic browsers)
-- [ ] **--browser=electron --app-binary=<path>**: Electron app testing via ChromeDriver with Electron binary (issue #73)
-- [ ] **--driver-binary=<path>**: custom driver binary (bypass selenium-manager)
-- [ ] **--browser-args="<args>"**: pass-through browser launch arguments
+- [x] **--browser=safari**: real Safari via `safaridriver` (macOS only, no headless/BiDi/CDP)
+- [x] **--endpoint=<url>**: connect to Selenium Grid 4 or remote WebDriver
+- [x] **--browser-binary=<path>**: custom browser binary (360, UC, QQ, Brave, Electron-embedded, QtWebEngine, domestic browsers)
+- [x] **--browser=electron --app-binary=<path>**: Electron app testing via ChromeDriver with Electron binary (issue #73)
+- [x] **--driver-binary=<path>**: custom driver binary (bypass selenium-manager)
+- [x] **--browser-args="<args>"**: pass-through browser launch arguments
 - [ ] **--browser-prefs=<json>**: Chromium prefs injection
-- [ ] **--capabilities=<json>**: pass-through arbitrary W3C capabilities (cover all WebDriver protocol endpoints)
+- [x] **--capabilities=<json>**: pass-through arbitrary W3C capabilities (cover all WebDriver protocol endpoints)
 - [ ] **Cloud browser integration**: Browserbase, Sauce Labs, BrowserStack
-- [ ] **grid status / grid attach / grid distribute --shard=x/y**: Grid management and distributed sharding
-- [ ] **pdf --filename=f**: via CDP `Page.printToPDF` (Chromium only)
+- [x] **grid status / grid attach / grid distribute --shard=x/y**: Grid management and distributed sharding
+- [x] **pdf --filename=f**: via W3C WebDriver print endpoint (`driver.printPage()`), Chromium + Firefox
 - [ ] **--browser=edge-ie** (Edge IE mode, recommended path for legacy IE scenarios)
+  - Requires Windows Edge Enterprise + IE-mode policy configuration (group policy / registry) — deferred until an environment with Edge Enterprise is available for verification
   - msedgedriver + Edge IE mode loads the IE engine
   - Auto-configure Edge IE mode policy (group policy / registry / `--ie-mode-tab`)
   - Platform: Windows Edge Enterprise only

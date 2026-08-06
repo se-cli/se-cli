@@ -41,6 +41,10 @@ se-cli select <ref> <value>
 se-cli check <ref>
 se-cli uncheck <ref>
 se-cli screenshot [ref] [--filename=f]
+se-cli pdf [--filename=f]        # save the current page as a PDF (W3C print endpoint)
+se-cli grid status <url>         # query a Selenium Grid 4 hub
+se-cli grid attach --endpoint=<url>   # attach to a Grid / remote WebDriver
+se-cli grid distribute --shard=1/4    # round-robin shard plan for parallel CI
 se-cli eval "<js>" [ref]
 se-cli run-code "<snippet>"   # arbitrary Selenium code; receives `driver`
 se-cli generate-locator <ref>  # recommended locator for a ref (role-based by default)

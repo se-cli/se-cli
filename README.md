@@ -131,6 +131,10 @@ se-cli close
 | `mcp-server` | Start MCP server in stdio mode (for VS Code / AI agents) |
 | `install --skills` | Install `SKILL.md` into agent skill directories (Claude Code, Cursor, Copilot, custom) |
 | `install-browser [chrome\|edge\|firefox]` | Install/verify the browser driver via Selenium Manager (auto-detects if omitted) |
+| `grid status <url>` | Query a Selenium Grid 4 hub status (nodes, slots, browsers) |
+| `grid attach --endpoint=<url>` | Attach to a Grid / remote WebDriver (alias for `open --endpoint`) |
+| `grid distribute --shard=x/y` | Compute a round-robin shard plan for parallel CI runs |
+| `pdf [--filename=f]` | Save the current page as a PDF (W3C print endpoint) |
 
 ### Navigation
 
@@ -323,9 +327,15 @@ Network interception, console capture, and visual debugging tools powered by Sel
 | `--raw` | Output only the result value (for scripting) |
 | `--json` | Structured JSON output |
 | `-s=<name>` | Use named session |
-| `--browser=chrome\|edge\|firefox` | Browser selection (default: auto-detect Edge → Chrome → Firefox) |
+| `--browser=chrome\|edge\|firefox\|safari\|electron` | Browser selection (default: auto-detect Edge → Chrome → Firefox; safari macOS-only; electron needs --app-binary) |
 | `--headed` | Show browser window (default: headless) |
 | `--cdp=<url>` | Attach to running Chrome via CDP |
+| `--endpoint=<url>` | Connect to Selenium Grid 4 / remote WebDriver (v0.10) |
+| `--browser-args="<args>"` | Pass-through browser launch arguments, e.g. `--disable-gpu --lang=zh-CN` (v0.10) |
+| `--capabilities=<json>` | Pass-through W3C capabilities, e.g. `--capabilities='{"acceptInsecureCerts":true}'` (v0.10) |
+| `--browser-binary=<path>` | Custom browser executable (360, UC, Brave, Electron-embedded…) (v0.10) |
+| `--driver-binary=<path>` | Custom driver executable, bypasses selenium-manager (v0.10) |
+| `--app-binary=<path>` | Electron executable for `--browser=electron` (v0.10) |
 | `--profile=<path>` | Use a persistent browser profile directory |
 | `--persistent` | Keep browser profile across sessions (auto-assigns path) |
 | `--idle-timeout=<min>` | Auto-close idle daemon after N minutes (default 30; 0 = never) |
