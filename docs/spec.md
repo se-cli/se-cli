@@ -794,6 +794,9 @@ BiDi integration and optimizing performance/stability.
 
 **Stability Hardening** (issue #78):
 
+- [x] **Startup cleanup**: daemon startup garbage-collects orphaned session
+  files (dead pid + old), old rotated log backups, and opt-in old
+  screenshots (issue #115)
 - [ ] **Error recovery**: driver crash detection with auto-restart, stale element ref
   auto-refresh, BiDi WebSocket auto-reconnect
 - [ ] **Session resilience**: session file validation, zombie process cleanup,

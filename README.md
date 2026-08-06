@@ -359,6 +359,23 @@ The daemon runs detached (its stdio is unreachable from the CLI), so se-cli writ
 - `SE_CLI_LOG_LEVEL=debug\|info\|warn\|error` controls verbosity (default `info`).
 - `se-cli logs [--tail=N]` prints the tail of the current session's logs.
 
+### Startup Cleanup (issue #115)
+
+Every daemon startup runs a best-effort garbage-collection pass so temporary
+files do not accumulate indefinitely (Playwright-style GC — only sessions
+whose daemon pid is dead AND older than the retention window are swept):
+
+| What | Retention | Default |
+|------|-----------|---------|
+| Orphaned `*.session` files (daemon pid dead + older than window) | `SE_CLI_CLEANUP_MAX_AGE_DAYS` | 7 days |
+| Rotated log backups (`*.log.1`, `*.log.2`, …) | `SE_CLI_CLEANUP_LOG_MAX_AGE_DAYS` | 7 days |
+| Old screenshots in `<project>/.se-cli/` | `SE_CLI_CLEANUP_SCREENSHOT_DAYS` | 0 (disabled) |
+
+Cleanup runs **before** the daemon writes its own session file, so an active
+session is never swept. Screenshot cleanup is opt-in — set
+`SE_CLI_CLEANUP_SCREENSHOT_DAYS` to enable. Cleanup failures are logged as
+warnings and never block daemon startup.
+
 ## Usage Examples
 
 ### Basic Form Submission

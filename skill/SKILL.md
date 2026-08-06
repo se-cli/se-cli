@@ -290,6 +290,12 @@ SE_CLI_LOG_LEVEL=debug se-cli ...  # Raise verbosity (debug|info|warn|error, def
 
 Log files rotate at 2 MB (2 backups). Command summaries record tool name, duration, and result code — never argument values (e.g. `fill` passwords).
 
+### Startup Cleanup (issue #115)
+Each daemon startup garbage-collects stale temporary files (best-effort, never blocks startup):
+- Orphaned session files from crashed daemons (pid dead + older than 7 days, `SE_CLI_CLEANUP_MAX_AGE_DAYS`)
+- Old rotated log backups (7 days, `SE_CLI_CLEANUP_LOG_MAX_AGE_DAYS`)
+- Opt-in old screenshots in `<project>/.se-cli/` (disabled by default; enable with `SE_CLI_CLEANUP_SCREENSHOT_DAYS`)
+
 ## Snapshots
 
 After each command, se-cli provides an aria snapshot of the page.

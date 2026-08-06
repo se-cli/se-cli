@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { StringDecoder } from 'string_decoder';
 import { Registry, SessionConfig } from '../registry';
 import { baseDaemonDir } from '../config';
+import { runCleanup } from '../cleanup';
 import type { ClientMessage, ServerMessage } from '../protocol';
 import { resetAll as resetNetworkDebugState } from './tools/network-state';
 import { parseViewport, parseGeolocation, applyEmulation, setEmulationState, resetEmulationState } from './tools/emulation-state';
@@ -501,6 +502,26 @@ const config: SessionConfig = {
   emulation: Object.keys(emulation).length > 0 ? emulation : undefined,
   pid: process.pid,
 };
+
+// Startup cleanup (issue #115): garbage-collect orphaned session files from
+// crashed daemons, old rotated log backups, and (opt-in) old screenshots.
+// Runs BEFORE writeSession so this daemon's own fresh session is never
+// swept. Best-effort — failures are swallowed and never block startup.
+try {
+  const cleaned = runCleanup({
+    baseDir: baseDaemonDir(),
+    maxAgeDays: Number(process.env.SE_CLI_CLEANUP_MAX_AGE_DAYS) || 7,
+    logMaxAgeDays: Number(process.env.SE_CLI_CLEANUP_LOG_MAX_AGE_DAYS) || 7,
+    screenshotDir: path.join(workspaceDir, '.se-cli'),
+    screenshotMaxAgeDays: Number(process.env.SE_CLI_CLEANUP_SCREENSHOT_DAYS) || 0,
+  });
+  if (cleaned.removedSessions + cleaned.removedLogs + cleaned.removedScreenshots > 0) {
+    logger.info('cleanup', `removed ${cleaned.removedSessions} orphan session(s), ${cleaned.removedLogs} old log backup(s), ${cleaned.removedScreenshots} old screenshot(s)`);
+  }
+} catch (e: any) {
+  logger.warn('cleanup', `cleanup failed: ${e.message}`);
+}
+
 registry.writeSession(wsHash, config);
 
 server.on('error', (err: any) => {
