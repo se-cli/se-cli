@@ -92,3 +92,22 @@ describe('v0.10: --browser-args / --capabilities pass-through', () => {
     await run(['close'], { SE_CLI_SESSION: sess });
   });
 });
+
+describe('v0.10: --browser-binary / --driver-binary pass-through', () => {
+  (E2E_ENABLED ? it : it.skip)('fails clearly when --driver-binary points to a nonexistent driver', async () => {
+    const sess = S();
+    await run(['open', '--browser=chrome', '--driver-binary=C:\\nonexistent\\chromedriver.exe'], { SE_CLI_SESSION: sess });
+    const err = await runExpectFail(['title'], { SE_CLI_SESSION: sess });
+    expect(err.toLowerCase()).toMatch(/nonexistent|spawn|ENOENT|driver/i);
+    await run(['close'], { SE_CLI_SESSION: sess }).catch(() => {});
+  });
+
+  (E2E_ENABLED ? it : it.skip)('fails clearly when --browser-binary points to a nonexistent browser', async () => {
+    const sess = S();
+    await run(['open', '--browser=chrome', '--browser-binary=C:\\nonexistent\\chrome.exe'], { SE_CLI_SESSION: sess });
+    const err = await runExpectFail(['title'], { SE_CLI_SESSION: sess });
+    expect(err.toLowerCase()).toMatch(/nonexistent|spawn|ENOENT|driver|binary/i);
+    await run(['close'], { SE_CLI_SESSION: sess }).catch(() => {});
+  });
+});
+

@@ -95,6 +95,8 @@ if (emuPermissions) emulation.permissions = emuPermissions.split(',').map(p => p
 const endpoint = args.find(a => a.startsWith('--endpoint='))?.slice('--endpoint='.length);
 const browserArgs = args.find(a => a.startsWith('--browser-args='))?.slice('--browser-args='.length);
 const capabilitiesJson = args.find(a => a.startsWith('--capabilities='))?.slice('--capabilities='.length);
+const browserBinary = args.find(a => a.startsWith('--browser-binary='))?.slice('--browser-binary='.length);
+const driverBinary = args.find(a => a.startsWith('--driver-binary='))?.slice('--driver-binary='.length);
 const browserArgsList = browserArgs ? parseBrowserArgs(browserArgs) : [];
 const capabilities = capabilitiesJson ? parseCapabilities(capabilitiesJson) : {};
 // --endpoint attaches to a remote WebDriver/Grid; --cdp attaches to a
@@ -201,6 +203,8 @@ async function buildDriver(): Promise<void> {
     endpoint,
     browserArgs: browserArgsList,
     capabilities,
+    browserBinary,
+    driverBinary,
     envBinaries: {
       chrome: process.env.SE_CHROME_BINARY,
       edge: process.env.SE_EDGE_BINARY,
@@ -209,6 +213,21 @@ async function buildDriver(): Promise<void> {
   });
   const builder = new Builder().forBrowser(spec.seleniumBrowserName);
   if (spec.usingServer) builder.usingServer(spec.usingServer);
+
+  // v0.10: --driver-binary bypasses selenium-manager and uses a custom
+  // driver executable (useful for pinned versions / air-gapped setups).
+  if (spec.driverBinary) {
+    if (browserName === 'chrome') {
+      const { ServiceBuilder } = require('selenium-webdriver/chrome');
+      builder.setChromeService(new ServiceBuilder(spec.driverBinary).build());
+    } else if (browserName === 'edge') {
+      const { ServiceBuilder } = require('selenium-webdriver/edge');
+      builder.setEdgeService(new ServiceBuilder(spec.driverBinary).build());
+    } else if (browserName === 'firefox') {
+      const { ServiceBuilder } = require('selenium-webdriver/firefox');
+      builder.setFirefoxService(new ServiceBuilder(spec.driverBinary).build());
+    }
+  }
 
   // Set unhandledPromptBehavior to 'ignore' so that alerts/confirm/prompt dialogs
   // are NOT auto-dismissed when subsequent WebDriver commands (e.g. applyTimeouts)

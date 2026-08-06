@@ -20,6 +20,10 @@ export interface DriverSpecInput {
   browserArgs?: string[];
   /** --capabilities=<json>: pass-through arbitrary W3C capabilities. */
   capabilities?: Record<string, unknown>;
+  /** --browser-binary=<path>: custom browser executable (overrides env binary). */
+  browserBinary?: string;
+  /** --driver-binary=<path>: custom driver executable (bypasses selenium-manager). */
+  driverBinary?: string;
   /** env binary overrides (SE_CHROME_BINARY / SE_EDGE_BINARY / SE_FIREFOX_BINARY). */
   envBinaries?: { chrome?: string; edge?: string; firefox?: string };
 }
@@ -29,6 +33,8 @@ export interface DriverSpec {
   seleniumBrowserName: string;
   /** Remote WebDriver / Grid URL, when --endpoint is set. */
   usingServer?: string;
+  /** Custom driver executable, when --driver-binary is set. */
+  driverBinary?: string;
   /** Capabilities merged from --capabilities (and defaults set by daemon). */
   extraCapabilities: Record<string, unknown>;
   chromeOptions?: {
@@ -126,6 +132,7 @@ export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
 
   const spec: DriverSpec = { seleniumBrowserName, extraCapabilities };
   if (input.endpoint) spec.usingServer = input.endpoint;
+  if (input.driverBinary) spec.driverBinary = input.driverBinary;
 
   if (browserName === 'chrome' || browserName === 'edge') {
     const isChrome = browserName === 'chrome';
@@ -138,7 +145,7 @@ export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
       excludeSwitches: ['enable-logging', 'disable-extensions'],
     };
     if (cdpEndpoint) opts.debuggerAddress = cdpEndpoint;
-    const binary = input.envBinaries?.[browserName];
+    const binary = input.browserBinary || input.envBinaries?.[browserName];
     if (binary) opts.binary = binary;
     if (isChrome) spec.chromeOptions = opts;
     else spec.edgeOptions = opts;
@@ -149,7 +156,7 @@ export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
     if (userArgs.length > 0) args.push(...userArgs);
     if (args.length > 0) opts.args = args;
     if (profilePath) opts.profile = profilePath;
-    const binary = input.envBinaries?.firefox;
+    const binary = input.browserBinary || input.envBinaries?.firefox;
     if (binary) opts.binary = binary;
     spec.firefoxOptions = opts;
   }

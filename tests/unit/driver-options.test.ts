@@ -112,4 +112,37 @@ describe('buildDriverSpec', () => {
     expect(spec.edgeOptions!.args).toContain('--foo');
     expect(spec.extraCapabilities.platformName).toBe('linux');
   });
+
+  // v0.10 batch 2: custom browser & driver binaries.
+
+  it('uses --browser-binary over env binary for chrome', () => {
+    const spec = buildDriverSpec({
+      browserName: 'chrome',
+      headed: true,
+      browserBinary: 'C:\\custom\\chrome.exe',
+      envBinaries: { chrome: 'C:\\env\\chrome.exe' },
+    });
+    expect(spec.chromeOptions!.binary).toBe('C:\\custom\\chrome.exe');
+  });
+
+  it('uses --browser-binary for edge and firefox', () => {
+    const edgeSpec = buildDriverSpec({ browserName: 'edge', headed: true, browserBinary: '/opt/edge' });
+    expect(edgeSpec.edgeOptions!.binary).toBe('/opt/edge');
+    const ffSpec = buildDriverSpec({ browserName: 'firefox', headed: true, browserBinary: '/opt/ff' });
+    expect(ffSpec.firefoxOptions!.binary).toBe('/opt/ff');
+  });
+
+  it('falls back to env binary when --browser-binary absent', () => {
+    const spec = buildDriverSpec({ browserName: 'firefox', headed: true, envBinaries: { firefox: '/env/ff' } });
+    expect(spec.firefoxOptions!.binary).toBe('/env/ff');
+  });
+
+  it('propagates --driver-binary into the spec', () => {
+    const spec = buildDriverSpec({ browserName: 'chrome', headed: true, driverBinary: '/opt/chromedriver' });
+    expect(spec.driverBinary).toBe('/opt/chromedriver');
+  });
+
+  it('omits driverBinary when not provided', () => {
+    expect(buildDriverSpec(base).driverBinary).toBeUndefined();
+  });
 });

@@ -81,6 +81,8 @@ export async function main(argv: string[]): Promise<void> {
       openOpts.endpoint = args.endpoint;
     }
     if (args['browser-args']) openOpts.browserArgs = args['browser-args'];
+    if (args['browser-binary']) openOpts.browserBinary = args['browser-binary'];
+    if (args['driver-binary']) openOpts.driverBinary = args['driver-binary'];
     if (args.capabilities) {
       try {
         openOpts.capabilities = JSON.parse(args.capabilities);
@@ -428,8 +430,8 @@ export async function main(argv: string[]): Promise<void> {
  * 'dev' as an extra argument).
  */
 export function filterCliFlags(argv: string[]): string[] {
-  const cliFlags = new Set(['raw', 'json', 'headed', 'persistent', 'help', 'browser', 'cdp', 's', 'session', 'profile', 'idle-timeout', 'endpoint', 'browser-args', 'capabilities']);
-  const valueFlags = new Set(['browser', 'cdp', 'profile', 's', 'session', 'endpoint', 'browser-args', 'capabilities']);
+  const cliFlags = new Set(['raw', 'json', 'headed', 'persistent', 'help', 'browser', 'cdp', 's', 'session', 'profile', 'idle-timeout', 'endpoint', 'browser-args', 'capabilities', 'browser-binary', 'driver-binary']);
+  const valueFlags = new Set(['browser', 'cdp', 'profile', 's', 'session', 'endpoint', 'browser-args', 'capabilities', 'browser-binary', 'driver-binary']);
   const forwardArgs: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];

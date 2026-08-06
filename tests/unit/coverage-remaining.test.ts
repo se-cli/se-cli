@@ -2108,5 +2108,7 @@ describe('program.ts filterCliFlags', () => {
     expect(filterCliFlags(['open', '--endpoint', 'http://grid:4444'])).toEqual(['open']);
     expect(filterCliFlags(['open', '--browser-args=--disable-gpu --foo'])).toEqual(['open']);
     expect(filterCliFlags(['open', '--capabilities={"a":1}', '--raw'])).toEqual(['open']);
+    expect(filterCliFlags(['open', '--browser-binary=C:\\chrome.exe'])).toEqual(['open']);
+    expect(filterCliFlags(['open', '--driver-binary', '/opt/chromedriver'])).toEqual(['open']);
   });
 });
