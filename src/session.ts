@@ -51,7 +51,7 @@ export class Session {
    *          browser window was spawned), 'started' if a new daemon was
    *          launched (a fresh browser window appears when headed).
    */
-  async startDaemon(opts: { browserName?: string; headed?: boolean; cdpEndpoint?: string; profilePath?: string; persistent?: boolean; idleTimeout?: number; emulation?: Record<string, any> } = {}): Promise<'started' | 'reused'> {
+  async startDaemon(opts: { browserName?: string; headed?: boolean; cdpEndpoint?: string; profilePath?: string; persistent?: boolean; idleTimeout?: number; emulation?: Record<string, any>; endpoint?: string; browserArgs?: string; capabilities?: Record<string, unknown> } = {}): Promise<'started' | 'reused'> {
     // If a daemon is already running on this socket, verify it's responsive.
     if (await this.canConnect()) {
       try {
@@ -89,6 +89,10 @@ export class Session {
     if (opts.profilePath) args.push(`--profile=${opts.profilePath}`);
     if (opts.persistent) args.push('--persistent');
     if (opts.idleTimeout !== undefined) args.push(`--idle-timeout=${opts.idleTimeout}`);
+    // v0.10: remote/grid/custom-browser flags.
+    if (opts.endpoint) args.push(`--endpoint=${opts.endpoint}`);
+    if (opts.browserArgs) args.push(`--browser-args=${opts.browserArgs}`);
+    if (opts.capabilities) args.push(`--capabilities=${JSON.stringify(opts.capabilities)}`);
     // v0.8: open-time emulation flags, passed through verbatim so the daemon
     // can persist them in the SessionConfig and replay them on driver rebuild.
     if (opts.emulation) {

@@ -2102,4 +2102,11 @@ describe('program.ts filterCliFlags', () => {
   it('keeps negative-number positionals after a stripped flag', () => {
     expect(filterCliFlags(['mousewheel', '-100', '-50', '-s', 'dev'])).toEqual(['mousewheel', '-100', '-50']);
   });
+
+  it('strips v0.10 remote/grid/custom-browser flags', () => {
+    expect(filterCliFlags(['open', '--endpoint=http://grid:4444'])).toEqual(['open']);
+    expect(filterCliFlags(['open', '--endpoint', 'http://grid:4444'])).toEqual(['open']);
+    expect(filterCliFlags(['open', '--browser-args=--disable-gpu --foo'])).toEqual(['open']);
+    expect(filterCliFlags(['open', '--capabilities={"a":1}', '--raw'])).toEqual(['open']);
+  });
 });

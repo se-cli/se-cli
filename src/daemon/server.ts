@@ -4,6 +4,7 @@ import { StringDecoder } from 'string_decoder';
 import { Registry, SessionConfig } from '../registry';
 import { baseDaemonDir } from '../config';
 import { runCleanup } from '../cleanup';
+import { buildDriverSpec, parseBrowserArgs, parseCapabilities } from '../driver-options';
 import type { ClientMessage, ServerMessage } from '../protocol';
 import { resetAll as resetNetworkDebugState } from './tools/network-state';
 import { parseViewport, parseGeolocation, applyEmulation, setEmulationState, resetEmulationState } from './tools/emulation-state';
@@ -90,6 +91,17 @@ const emuGeolocation = args.find(a => a.startsWith('--geolocation='))?.slice('--
 if (emuGeolocation) emulation.geolocation = parseGeolocation(emuGeolocation);
 const emuPermissions = args.find(a => a.startsWith('--permissions='))?.slice('--permissions='.length);
 if (emuPermissions) emulation.permissions = emuPermissions.split(',').map(p => p.trim()).filter(Boolean);
+// v0.10: remote/grid/custom-browser flags.
+const endpoint = args.find(a => a.startsWith('--endpoint='))?.slice('--endpoint='.length);
+const browserArgs = args.find(a => a.startsWith('--browser-args='))?.slice('--browser-args='.length);
+const capabilitiesJson = args.find(a => a.startsWith('--capabilities='))?.slice('--capabilities='.length);
+const browserArgsList = browserArgs ? parseBrowserArgs(browserArgs) : [];
+const capabilities = capabilitiesJson ? parseCapabilities(capabilitiesJson) : {};
+// --endpoint attaches to a remote WebDriver/Grid; --cdp attaches to a
+// local Chrome debugger port — they cannot both define the transport.
+if (endpoint && cdpEndpoint) {
+  throw new Error('--endpoint and --cdp are mutually exclusive (remote WebDriver vs local CDP attach)');
+}
 const version = require('../../package.json').version;
 
 const ALLOWED_BROWSERS = new Set(['chrome', 'edge', 'firefox']);
@@ -181,9 +193,22 @@ const server = net.createServer((socket) => {
 async function buildDriver(): Promise<void> {
   const start = Date.now();
   const { Builder } = require('selenium-webdriver');
-  // selenium-webdriver expects 'MicrosoftEdge' for Edge, not 'edge'.
-  const seleniumBrowserName = browserName === 'edge' ? 'MicrosoftEdge' : browserName;
-  const builder = new Builder().forBrowser(seleniumBrowserName);
+  const spec = buildDriverSpec({
+    browserName,
+    headed,
+    cdpEndpoint,
+    profilePath,
+    endpoint,
+    browserArgs: browserArgsList,
+    capabilities,
+    envBinaries: {
+      chrome: process.env.SE_CHROME_BINARY,
+      edge: process.env.SE_EDGE_BINARY,
+      firefox: process.env.SE_FIREFOX_BINARY,
+    },
+  });
+  const builder = new Builder().forBrowser(spec.seleniumBrowserName);
+  if (spec.usingServer) builder.usingServer(spec.usingServer);
 
   // Set unhandledPromptBehavior to 'ignore' so that alerts/confirm/prompt dialogs
   // are NOT auto-dismissed when subsequent WebDriver commands (e.g. applyTimeouts)
@@ -197,66 +222,15 @@ async function buildDriver(): Promise<void> {
   // to get the WebSocket URL from session capabilities.
   builder.getCapabilities().set('webSocketUrl', true);
 
-  if (browserName === 'chrome') {
-    const chromeArgs: string[] = [
-      // Suppress Chrome's own stderr logging noise (GPU warnings, importer
-      // scans, task-provider bugs, etc.) that floods the daemon's stderr on
-      // Windows.  These flags are safe in both headed and headless modes.
-      '--disable-logging', '--log-level=3', '--disable-breakpad',
-    ];
-    if (!headed && !cdpEndpoint) {
-      // Disable background/renderer throttling: on busy CI runners (or
-      // low-memory machines) Windows may deprioritize the renderer process,
-      // causing "Timed out receiving message from renderer" during long
-      // test runs. These flags keep renderer work at normal priority.
-      chromeArgs.push(
-        '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu',
-        '--disable-background-timer-throttling', '--disable-renderer-backgrounding',
-        '--disable-backgrounding-occluded-windows',
-      );
-    }
-    if (profilePath) chromeArgs.push(`--user-data-dir=${profilePath}`);
-    const chromeOpts: any = {
-      args: chromeArgs,
-      // excludeSwitches removes Chrome defaults that produce stderr noise.
-      excludeSwitches: ['enable-logging', 'disable-extensions'],
-    };
-    if (cdpEndpoint) chromeOpts.debuggerAddress = cdpEndpoint;
-    // Allow overriding the Chrome binary path via env var (useful in CI).
-    if (process.env.SE_CHROME_BINARY) chromeOpts.binary = process.env.SE_CHROME_BINARY;
-    builder.getCapabilities().set('goog:chromeOptions', chromeOpts);
-  } else if (browserName === 'edge') {
-    const edgeArgs: string[] = [
-      '--disable-logging', '--log-level=3', '--disable-breakpad',
-    ];
-    if (!headed) {
-      // Same renderer-throttling flags as Chrome — Edge is Chromium-based
-      // and exhibits the same renderer timeout on busy Windows runners.
-      edgeArgs.push(
-        '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu',
-        '--disable-background-timer-throttling', '--disable-renderer-backgrounding',
-        '--disable-backgrounding-occluded-windows',
-      );
-    }
-    if (profilePath) edgeArgs.push(`--user-data-dir=${profilePath}`);
-    const edgeOpts: any = {
-      args: edgeArgs,
-      excludeSwitches: ['enable-logging', 'disable-extensions'],
-    };
-    if (cdpEndpoint) edgeOpts.debuggerAddress = cdpEndpoint;
-    if (process.env.SE_EDGE_BINARY) edgeOpts.binary = process.env.SE_EDGE_BINARY;
-    builder.getCapabilities().set('ms:edgeOptions', edgeOpts);
-  } else if (browserName === 'firefox') {
-    const firefoxOpts: any = {};
-    if (!headed) {
-      firefoxOpts.args = ['-headless'];
-    }
-    if (profilePath) firefoxOpts.profile = profilePath;
-    // Allow overriding the Firefox binary path via env var (useful in CI
-    // where browser-actions/setup-firefox installs to a non-standard path).
-    if (process.env.SE_FIREFOX_BINARY) firefoxOpts.binary = process.env.SE_FIREFOX_BINARY;
-    builder.getCapabilities().set('moz:firefoxOptions', firefoxOpts);
+  // v0.10: user-supplied W3C capabilities (--capabilities), applied last so
+  // they override our defaults.
+  for (const [key, value] of Object.entries(spec.extraCapabilities)) {
+    builder.getCapabilities().set(key, value);
   }
+
+  if (spec.chromeOptions) builder.getCapabilities().set('goog:chromeOptions', spec.chromeOptions);
+  if (spec.edgeOptions) builder.getCapabilities().set('ms:edgeOptions', spec.edgeOptions);
+  if (spec.firefoxOptions) builder.getCapabilities().set('moz:firefoxOptions', spec.firefoxOptions);
 
   // Add a timeout so builder.build() doesn't hang indefinitely if
   // the browser driver process stalls.
@@ -266,7 +240,7 @@ async function buildDriver(): Promise<void> {
   });
   driver = await Promise.race([buildPromise, timeoutPromise]);
   driverInitError = null;
-  logger.info('driver', `built ${browserName} driver in ${Date.now() - start}ms${headed ? ' (headed)' : ' (headless)'}`);
+  logger.info('driver', `built ${browserName} driver in ${Date.now() - start}ms${headed ? ' (headed)' : ' (headless)'}${endpoint ? ` (remote: ${endpoint})` : ''}`);
   // v0.8: replay the open-time emulation flags on the fresh driver. Failures
   // (e.g. unsupported capabilities on Firefox) are logged, not fatal — the
   // driver itself is healthy and the rest of the session keeps working.

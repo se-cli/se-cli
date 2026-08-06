@@ -72,6 +72,23 @@ export async function main(argv: string[]): Promise<void> {
     if (args.headed) openOpts.headed = true;
     if (args.cdp) openOpts.cdpEndpoint = args.cdp;
     if (args.profile) openOpts.profilePath = args.profile;
+    // v0.10: remote/grid/custom-browser flags.
+    if (args.endpoint) {
+      if (args.cdp) {
+        console.error('Error: --endpoint and --cdp are mutually exclusive (remote WebDriver vs local CDP attach)');
+        process.exit(1);
+      }
+      openOpts.endpoint = args.endpoint;
+    }
+    if (args['browser-args']) openOpts.browserArgs = args['browser-args'];
+    if (args.capabilities) {
+      try {
+        openOpts.capabilities = JSON.parse(args.capabilities);
+      } catch (e: any) {
+        console.error(`Error: Invalid --capabilities JSON: ${e.message}`);
+        process.exit(1);
+      }
+    }
     if (args.persistent) {
       openOpts.persistent = true;
       // Auto-assign profile path
@@ -411,8 +428,8 @@ export async function main(argv: string[]): Promise<void> {
  * 'dev' as an extra argument).
  */
 export function filterCliFlags(argv: string[]): string[] {
-  const cliFlags = new Set(['raw', 'json', 'headed', 'persistent', 'help', 'browser', 'cdp', 's', 'session', 'profile', 'idle-timeout']);
-  const valueFlags = new Set(['browser', 'cdp', 'profile', 's', 'session']);
+  const cliFlags = new Set(['raw', 'json', 'headed', 'persistent', 'help', 'browser', 'cdp', 's', 'session', 'profile', 'idle-timeout', 'endpoint', 'browser-args', 'capabilities']);
+  const valueFlags = new Set(['browser', 'cdp', 'profile', 's', 'session', 'endpoint', 'browser-args', 'capabilities']);
   const forwardArgs: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
