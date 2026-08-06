@@ -2110,5 +2110,6 @@ describe('program.ts filterCliFlags', () => {
     expect(filterCliFlags(['open', '--capabilities={"a":1}', '--raw'])).toEqual(['open']);
     expect(filterCliFlags(['open', '--browser-binary=C:\\chrome.exe'])).toEqual(['open']);
     expect(filterCliFlags(['open', '--driver-binary', '/opt/chromedriver'])).toEqual(['open']);
+    expect(filterCliFlags(['grid', 'distribute', '--shard=1/4', '--browsers=a,b'])).toEqual(['grid', 'distribute']);
   });
 });

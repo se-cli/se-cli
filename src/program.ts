@@ -158,6 +158,58 @@ export async function main(argv: string[]): Promise<void> {
     return;
   }
 
+  // Grid management (v0.10): status query, attach alias, shard planning.
+  if (cmd === 'grid') {
+    const { gridStatus, formatGridStatus, parseShard, computeShardPlan } = require('./grid');
+    const sub = args._[1];
+    if (sub === 'status') {
+      const url = args.endpoint || args._[2];
+      if (!url) {
+        console.error('Error: grid status requires a Grid URL. Usage: se-cli grid status <url> [--endpoint=<url>]');
+        process.exit(1);
+      }
+      gridStatus(url).then((s: any) => {
+        console.log(formatGridStatus(s));
+      });
+      return;
+    }
+    if (sub === 'attach') {
+      // Alias for `open --endpoint=<url>`: attach to a Grid/remote driver.
+      if (!args.endpoint) {
+        console.error('Error: grid attach requires --endpoint=<url>. Usage: se-cli grid attach --endpoint=<grid-url> [--browser=<name>]');
+        process.exit(1);
+      }
+      const startResult = await session.startDaemon({
+        endpoint: args.endpoint,
+        browserName: args.browser,
+      });
+      if (startResult === 'reused') {
+        console.log(`(reusing existing browser session "${sessionName}" — run "se-cli close" to stop it.)`);
+      }
+      return;
+    }
+    if (sub === 'distribute') {
+      if (!args.shard) {
+        console.error('Error: grid distribute requires --shard=<index>/<total>. Usage: se-cli grid distribute --shard=1/4 [--browsers=a,b,c]');
+        process.exit(1);
+      }
+      let spec: any;
+      try {
+        spec = parseShard(args.shard);
+      } catch (e: any) {
+        console.error(`Error: ${e.message}`);
+        process.exit(1);
+      }
+      const list = args.browsers ? String(args.browsers).split(',').map((s: string) => s.trim()).filter(Boolean)
+        : ['chrome', 'edge', 'firefox'];
+      const plan = computeShardPlan(list, spec);
+      console.log(`Shard ${plan.index}/${plan.total}: ${plan.items.length === 0 ? '(no browsers assigned)' : plan.items.join(', ')}`);
+      return;
+    }
+    console.error('Error: unknown grid subcommand. Supported: status, attach, distribute');
+    process.exit(1);
+  }
+
   // MCP Server mode — start a long-lived MCP server over stdio or HTTP
   if (cmd === 'mcp-server') {
     const { startMcpServer } = require('./mcp-server');
@@ -430,8 +482,8 @@ export async function main(argv: string[]): Promise<void> {
  * 'dev' as an extra argument).
  */
 export function filterCliFlags(argv: string[]): string[] {
-  const cliFlags = new Set(['raw', 'json', 'headed', 'persistent', 'help', 'browser', 'cdp', 's', 'session', 'profile', 'idle-timeout', 'endpoint', 'browser-args', 'capabilities', 'browser-binary', 'driver-binary']);
-  const valueFlags = new Set(['browser', 'cdp', 'profile', 's', 'session', 'endpoint', 'browser-args', 'capabilities', 'browser-binary', 'driver-binary']);
+  const cliFlags = new Set(['raw', 'json', 'headed', 'persistent', 'help', 'browser', 'cdp', 's', 'session', 'profile', 'idle-timeout', 'endpoint', 'browser-args', 'capabilities', 'browser-binary', 'driver-binary', 'shard', 'browsers']);
+  const valueFlags = new Set(['browser', 'cdp', 'profile', 's', 'session', 'endpoint', 'browser-args', 'capabilities', 'browser-binary', 'driver-binary', 'shard', 'browsers']);
   const forwardArgs: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];

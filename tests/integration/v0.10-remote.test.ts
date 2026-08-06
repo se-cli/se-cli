@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import * as http from 'http';
 import * as path from 'path';
 import { shouldRunE2E } from './detect-browsers';
 import { startTestServer, type TestServer } from './test-server';
@@ -10,11 +11,34 @@ const CLI = path.join(__dirname, '..', '..', 'dist', 'cli.js');
 const E2E_ENABLED = shouldRunE2E();
 
 let server: TestServer;
+let gridMock: http.Server;
+let gridPort = 0;
 beforeAll(async () => {
   server = await startTestServer();
+  // Minimal Selenium Grid 4 /status mock.
+  gridMock = http.createServer((req, res) => {
+    if (req.url?.endsWith('/status')) {
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify({
+        value: {
+          ready: true,
+          message: 'Selenium Grid ready.',
+          nodes: [{ id: 'n1', maxSession: 5, sessionCount: 1, slots: { chrome: {}, firefox: {} } }],
+        },
+      }));
+    } else {
+      res.statusCode = 404;
+      res.end();
+    }
+  });
+  await new Promise<void>((resolve) => gridMock.listen(0, '127.0.0.1', () => {
+    gridPort = (gridMock.address() as any).port;
+    resolve();
+  }));
 });
 afterAll(async () => {
   await server.close();
+  await new Promise<void>((resolve) => gridMock.close(() => resolve()));
 });
 const EXAMPLE_URL = () => server.url('example.html');
 
@@ -72,6 +96,28 @@ describe('v0.10: --endpoint (remote WebDriver / Grid)', () => {
       { SE_CLI_SESSION: sess },
     );
     expect(err).toMatch(/Invalid --capabilities JSON/);
+  });
+});
+
+describe('v0.10: grid commands', () => {
+  (E2E_ENABLED ? it : it.skip)('grid status prints a formatted summary from a live Grid', async () => {
+    const out = await run(['grid', 'status', `http://127.0.0.1:${gridPort}/wd/hub`]);
+    expect(out).toContain('Grid: http://127.0.0.1:');
+    expect(out).toContain('Status: ready');
+    expect(out).toContain('Nodes: 1');
+    expect(out).toContain('Total slots: 5');
+    expect(out).toContain('Browsers: chrome, firefox');
+  });
+
+  (E2E_ENABLED ? it : it.skip)('grid status reports an unreachable grid', async () => {
+    const out = await run(['grid', 'status', 'http://127.0.0.1:1']);
+    expect(out).toMatch(/Grid unreachable/i);
+  });
+
+  (E2E_ENABLED ? it : it.skip)('grid distribute computes the requested shard', async () => {
+    const out = await run(['grid', 'distribute', '--shard=2/3']);
+    expect(out).toContain('Shard 2/3:');
+    expect(out).toContain('edge');
   });
 });
 
