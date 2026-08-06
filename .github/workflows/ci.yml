@@ -48,12 +48,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        browser: [chrome, edge, firefox]
-        exclude:
-          # Edge is only on Windows
+        include:
+          # Core browser matrix — runs lifecycle + v0.10-remote suites.
           - os: ubuntu-latest
+            browser: chrome
+          - os: ubuntu-latest
+            browser: firefox
+          - os: windows-latest
+            browser: chrome
+          - os: windows-latest
             browser: edge
+          - os: windows-latest
+            browser: firefox
+          # Safari only exists on macOS (safaridriver ships with macOS).
+          # Runs the v0.10-remote suite (lifecycle's CDP/emulation tests
+          # are not supported by safaridriver).
+          - os: macos-latest
+            browser: safari
+    env:
+      SE_CLI_E2E: '1'
+      SE_CLI_TEST_CHROME: ${{ matrix.browser == 'chrome' && '1' || '' }}
+      SE_CLI_TEST_EDGE: ${{ matrix.browser == 'edge' && '1' || '' }}
+      SE_CLI_TEST_FIREFOX: ${{ matrix.browser == 'firefox' && '1' || '' }}
+      SE_CLI_TEST_SAFARI: ${{ matrix.browser == 'safari' && '1' || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -78,27 +95,34 @@ jobs:
         with:
           firefox-version: latest
 
+      # Enable safaridriver on macOS (requires admin; runners have sudo).
+      - name: Enable safaridriver (macOS)
+        if: runner.os == 'macOS' && matrix.browser == 'safari'
+        run: sudo safaridriver --enable
+
+      # The safari job runs only the v0.10-remote suite: lifecycle
+      # exercises CDP/emulation features safaridriver does not support.
+      - name: Run integration tests (Safari)
+        if: matrix.browser == 'safari'
+        id: integration-test-safari
+        run: npx vitest run tests/integration/v0.10-remote.test.ts
       - name: Run integration tests
+        if: matrix.browser != 'safari'
         id: integration-test
         env:
-          SE_CLI_E2E: '1'
-          SE_CLI_TEST_CHROME: ${{ matrix.browser == 'chrome' && '1' || '' }}
-          SE_CLI_TEST_EDGE: ${{ matrix.browser == 'edge' && '1' || '' }}
-          SE_CLI_TEST_FIREFOX: ${{ matrix.browser == 'firefox' && '1' || '' }}
           SE_FIREFOX_BINARY: ${{ matrix.browser == 'firefox' && (runner.os == 'Linux' && steps.firefox-linux.outputs.firefox-path || steps.firefox-win.outputs.firefox-path) || '' }}
-        run: npx vitest run tests/integration/lifecycle.test.ts
+        run: npx vitest run tests/integration/lifecycle.test.ts tests/integration/v0.10-remote.test.ts
 
       # Retry integration tests once on failure — browser driver crashes
       # (e.g. Windows chromedriver 0xC0000142) are often transient.
+      - name: Retry integration tests on failure (Safari)
+        if: failure() && steps.integration-test-safari.outcome == 'failure'
+        run: npx vitest run tests/integration/v0.10-remote.test.ts
       - name: Retry integration tests on failure
         if: failure() && steps.integration-test.outcome == 'failure'
         env:
-          SE_CLI_E2E: '1'
-          SE_CLI_TEST_CHROME: ${{ matrix.browser == 'chrome' && '1' || '' }}
-          SE_CLI_TEST_EDGE: ${{ matrix.browser == 'edge' && '1' || '' }}
-          SE_CLI_TEST_FIREFOX: ${{ matrix.browser == 'firefox' && '1' || '' }}
           SE_FIREFOX_BINARY: ${{ matrix.browser == 'firefox' && (runner.os == 'Linux' && steps.firefox-linux.outputs.firefox-path || steps.firefox-win.outputs.firefox-path) || '' }}
-        run: npx vitest run tests/integration/lifecycle.test.ts
+        run: npx vitest run tests/integration/lifecycle.test.ts tests/integration/v0.10-remote.test.ts
       - name: Upload screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4

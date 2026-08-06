@@ -695,7 +695,6 @@ never match — emphasized as a differentiated stronghold rather than a passing 
 - [x] **--browser=safari**: real Safari via `safaridriver` (macOS only, no headless/BiDi/CDP)
 - [x] **--endpoint=<url>**: connect to Selenium Grid 4 or remote WebDriver
 - [x] **--browser-binary=<path>**: custom browser binary (360, UC, QQ, Brave, Electron-embedded, QtWebEngine, domestic browsers)
-- [x] **--browser=electron --app-binary=<path>**: Electron app testing via ChromeDriver with Electron binary (issue #73)
 - [x] **--driver-binary=<path>**: custom driver binary (bypass selenium-manager)
 - [x] **--browser-args="<args>"**: pass-through browser launch arguments
 - [ ] **--browser-prefs=<json>**: Chromium prefs injection
@@ -720,6 +719,12 @@ never match — emphasized as a differentiated stronghold rather than a passing 
   - aria snapshot: uses main injection script (Edge shell supports modern JS), but IE-engine-rendered DOM may have role calculation drift; output header annotated `[browser=edge-ie, capabilities=limited]`
   - codegen: disable `By.role()`, keep `By.css()` / `By.xpath()`
   - Startup detects IE mode availability; if unconfigured, returns clear setup guidance (registry / group policy steps)
+
+#### 远期目标 (Backlog — 未排期)
+
+- [ ] **--browser=electron --app-binary=<path>**: Electron app testing via ChromeDriver with Electron binary (issue #73)
+  - Electron executable replaces the Chrome binary; the app path travels via `--browser-args=--app=<dir>`; requires an Electron-matched chromedriver (`electron-chromedriver` package) via `--driver-binary`
+  - Removed from the v0.10 plan: needs an Electron test target + version-matched driver in CI to verify reliably — recorded here as a long-term goal instead
 
 > **Safari limitations**: safaridriver has no headless mode, no BiDi/CDP support, macOS only.
 > Basic navigation/interaction/screenshot/storage commands work; network interception,

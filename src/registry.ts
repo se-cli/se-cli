@@ -8,7 +8,7 @@ export interface SessionConfig {
   socketPath: string;
   workspaceDir: string;
   persistent: boolean;
-  browserName: 'chrome' | 'edge' | 'firefox' | 'safari' | 'electron';
+  browserName: 'chrome' | 'edge' | 'firefox' | 'safari';
   headed?: boolean;
   cdpEndpoint?: string;
   profilePath?: string;

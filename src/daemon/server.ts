@@ -57,7 +57,7 @@ const args = process.argv.slice(2);
 const sessionName = args[0];
 const socketPath = args[1];
 const workspaceDir = args[2];
-const browserName = (args[3] as 'chrome' | 'edge' | 'firefox' | 'safari' | 'electron') || 'chrome';
+const browserName = (args[3] as 'chrome' | 'edge' | 'firefox' | 'safari') || 'chrome';
 const headed = args.includes('--headed');
 const cdpEndpoint = args.find(a => a.startsWith('--cdp='))?.slice('--cdp='.length);
 const profilePath = args.find(a => a.startsWith('--profile='))?.slice('--profile='.length);
@@ -97,7 +97,6 @@ const browserArgs = args.find(a => a.startsWith('--browser-args='))?.slice('--br
 const capabilitiesJson = args.find(a => a.startsWith('--capabilities='))?.slice('--capabilities='.length);
 const browserBinary = args.find(a => a.startsWith('--browser-binary='))?.slice('--browser-binary='.length);
 const driverBinary = args.find(a => a.startsWith('--driver-binary='))?.slice('--driver-binary='.length);
-const appBinary = args.find(a => a.startsWith('--app-binary='))?.slice('--app-binary='.length);
 const browserArgsList = browserArgs ? parseBrowserArgs(browserArgs) : [];
 const capabilities = capabilitiesJson ? parseCapabilities(capabilitiesJson) : {};
 // --endpoint attaches to a remote WebDriver/Grid; --cdp attaches to a
@@ -107,9 +106,9 @@ if (endpoint && cdpEndpoint) {
 }
 const version = require('../../package.json').version;
 
-const ALLOWED_BROWSERS = new Set(['chrome', 'edge', 'firefox', 'safari', 'electron']);
+const ALLOWED_BROWSERS = new Set(['chrome', 'edge', 'firefox', 'safari']);
 if (!ALLOWED_BROWSERS.has(browserName)) {
-  throw new Error(`Unsupported browser: ${browserName}. Supported: chrome, edge, firefox, safari, electron`);
+  throw new Error(`Unsupported browser: ${browserName}. Supported: chrome, edge, firefox, safari`);
 }
 
 let driver: any = null;
@@ -206,7 +205,6 @@ async function buildDriver(): Promise<void> {
     capabilities,
     browserBinary,
     driverBinary,
-    appBinary,
     envBinaries: {
       chrome: process.env.SE_CHROME_BINARY,
       edge: process.env.SE_EDGE_BINARY,
@@ -218,16 +216,14 @@ async function buildDriver(): Promise<void> {
 
   // v0.10: --driver-binary bypasses selenium-manager and uses a custom
   // driver executable (useful for pinned versions / air-gapped setups).
-  // Electron uses ChromeDriver too.
-  const driverBrowser = browserName === 'electron' ? 'chrome' : browserName;
   if (spec.driverBinary) {
-    if (driverBrowser === 'chrome') {
+    if (browserName === 'chrome') {
       const { ServiceBuilder } = require('selenium-webdriver/chrome');
       builder.setChromeService(new ServiceBuilder(spec.driverBinary).build());
-    } else if (driverBrowser === 'edge') {
+    } else if (browserName === 'edge') {
       const { ServiceBuilder } = require('selenium-webdriver/edge');
       builder.setEdgeService(new ServiceBuilder(spec.driverBinary).build());
-    } else if (driverBrowser === 'firefox') {
+    } else if (browserName === 'firefox') {
       const { ServiceBuilder } = require('selenium-webdriver/firefox');
       builder.setFirefoxService(new ServiceBuilder(spec.driverBinary).build());
     }

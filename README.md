@@ -327,7 +327,7 @@ Network interception, console capture, and visual debugging tools powered by Sel
 | `--raw` | Output only the result value (for scripting) |
 | `--json` | Structured JSON output |
 | `-s=<name>` | Use named session |
-| `--browser=chrome\|edge\|firefox\|safari\|electron` | Browser selection (default: auto-detect Edge → Chrome → Firefox; safari macOS-only; electron needs --app-binary) |
+| `--browser=chrome\|edge\|firefox\|safari` | Browser selection (default: auto-detect Edge → Chrome → Firefox; safari macOS-only) |
 | `--headed` | Show browser window (default: headless) |
 | `--cdp=<url>` | Attach to running Chrome via CDP |
 | `--endpoint=<url>` | Connect to Selenium Grid 4 / remote WebDriver (v0.10) |
@@ -335,7 +335,6 @@ Network interception, console capture, and visual debugging tools powered by Sel
 | `--capabilities=<json>` | Pass-through W3C capabilities, e.g. `--capabilities='{"acceptInsecureCerts":true}'` (v0.10) |
 | `--browser-binary=<path>` | Custom browser executable (360, UC, Brave, Electron-embedded…) (v0.10) |
 | `--driver-binary=<path>` | Custom driver executable, bypasses selenium-manager (v0.10) |
-| `--app-binary=<path>` | Electron executable for `--browser=electron` (v0.10) |
 | `--profile=<path>` | Use a persistent browser profile directory |
 | `--persistent` | Keep browser profile across sessions (auto-assigns path) |
 | `--idle-timeout=<min>` | Auto-close idle daemon after N minutes (default 30; 0 = never) |
