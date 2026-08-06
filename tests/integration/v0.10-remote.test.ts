@@ -20,13 +20,14 @@ const RESOLVED_BROWSERS = resolveTestBrowsers();
  * Pick the first available browser from `prefs`, based on what the current
  * CI job selected (SE_CLI_TEST_* env) or what is installed locally.
  * Returns undefined when none of the preferred browsers is available —
- * callers skip in that case.
+ * callers skip in that case (e.g. the safari job skips the pdf and
+ * browser-args tests, which safaridriver does not support).
  */
 function pickBrowser(prefs: BrowserName[]): BrowserName | undefined {
   for (const p of prefs) {
     if (RESOLVED_BROWSERS.includes(p)) return p;
   }
-  return RESOLVED_BROWSERS[0];
+  return undefined;
 }
 
 let server: TestServer;

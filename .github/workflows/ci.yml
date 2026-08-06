@@ -95,10 +95,13 @@ jobs:
         with:
           firefox-version: latest
 
-      # Enable safaridriver on macOS (requires admin; runners have sudo).
-      - name: Enable safaridriver (macOS)
-        if: runner.os == 'macOS' && matrix.browser == 'safari'
-        run: sudo safaridriver --enable
+      # NOTE: do NOT run `sudo safaridriver --enable` here. On the
+      # macos-26 arm64 runner image it registers a persistent
+      # safaridriver LaunchDaemon that pairs Safari immediately, so the
+      # selenium-webdriver-spawned safaridriver fails with "already
+      # paired with another WebDriver session". The runner image already
+      # authorizes WebDriver automation; selenium spawns its own
+      # safaridriver process instead.
 
       # The safari job runs only the v0.10-remote suite: lifecycle
       # exercises CDP/emulation features safaridriver does not support.
