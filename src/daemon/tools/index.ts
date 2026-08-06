@@ -11,6 +11,7 @@ import { browser_check, browser_uncheck } from './check';
 import { browser_snapshot } from './snapshot';
 import { browser_find } from './find';
 import { browser_screenshot } from './screenshot';
+import { browser_pdf } from './pdf';
 import { browser_eval } from './eval';
 import { browser_run_code } from './run-code';
 import {
@@ -88,6 +89,7 @@ export const tools: Record<string, (driver: any, params: any, response: any) => 
   browser_snapshot,
   browser_find,
   browser_screenshot,
+  browser_pdf,
   browser_eval,
   browser_run_code,
   browser_cookie_list,

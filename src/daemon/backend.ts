@@ -243,6 +243,8 @@ export function parseCommand(args: string[]): { toolName: string; toolParams: an
     'snapshot': () => ({ toolName: 'browser_snapshot', toolParams: { target: positional[0], depth: parsed.depth ? parseInt(parsed.depth) : undefined, filename: parsed.filename } }),
     'find': () => ({ toolName: 'browser_find', toolParams: { text: positional[0], regex: parsed.regex } }),
     'screenshot': () => ({ toolName: 'browser_screenshot', toolParams: { target: positional[0], filename: parsed.filename } }),
+    // v0.10: save the current page as a PDF (W3C print endpoint)
+    'pdf': () => ({ toolName: 'browser_pdf', toolParams: { filename: parsed.filename } }),
     'eval': () => ({ toolName: 'browser_eval', toolParams: { script: positional[0], target: positional[1] } }),
     // v0.9: run-code — arbitrary Selenium snippets
     'run-code': () => ({ toolName: 'browser_run_code', toolParams: { code: positional[0] } }),

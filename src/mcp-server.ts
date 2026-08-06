@@ -355,6 +355,17 @@ export const toolDefinitions: ToolDef[] = [
     },
   },
   {
+    name: 'browser_pdf',
+    description: 'Save the current page as a PDF (W3C WebDriver print endpoint).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        filename: { type: 'string', description: 'Output filename (optional, default page-<timestamp>.pdf)' },
+        session: { type: 'string', description: 'Session name' },
+      },
+    },
+  },
+  {
     name: 'browser_eval',
     description: 'Execute JavaScript in the page. Can run on a specific element or the document.',
     inputSchema: {
@@ -957,6 +968,12 @@ export function mapToolToCliArgs(toolName: string, args: any): string[] | null {
     case 'browser_screenshot': {
       const cliArgs: string[] = ['screenshot'];
       if (args.target) cliArgs.push(args.target);
+      if (args.filename) cliArgs.push(`--filename=${args.filename}`);
+      cliArgs.push(...sessionFlag);
+      return cliArgs;
+    }
+    case 'browser_pdf': {
+      const cliArgs: string[] = ['pdf'];
       if (args.filename) cliArgs.push(`--filename=${args.filename}`);
       cliArgs.push(...sessionFlag);
       return cliArgs;
