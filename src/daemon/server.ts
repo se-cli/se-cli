@@ -204,7 +204,15 @@ async function buildDriver(): Promise<void> {
       '--disable-logging', '--log-level=3', '--disable-breakpad',
     ];
     if (!headed && !cdpEndpoint) {
-      chromeArgs.push('--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu');
+      // Disable background/renderer throttling: on busy CI runners (or
+      // low-memory machines) Windows may deprioritize the renderer process,
+      // causing "Timed out receiving message from renderer" during long
+      // test runs. These flags keep renderer work at normal priority.
+      chromeArgs.push(
+        '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu',
+        '--disable-background-timer-throttling', '--disable-renderer-backgrounding',
+        '--disable-backgrounding-occluded-windows',
+      );
     }
     if (profilePath) chromeArgs.push(`--user-data-dir=${profilePath}`);
     const chromeOpts: any = {
@@ -221,7 +229,13 @@ async function buildDriver(): Promise<void> {
       '--disable-logging', '--log-level=3', '--disable-breakpad',
     ];
     if (!headed) {
-      edgeArgs.push('--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu');
+      // Same renderer-throttling flags as Chrome — Edge is Chromium-based
+      // and exhibits the same renderer timeout on busy Windows runners.
+      edgeArgs.push(
+        '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu',
+        '--disable-background-timer-throttling', '--disable-renderer-backgrounding',
+        '--disable-backgrounding-occluded-windows',
+      );
     }
     if (profilePath) edgeArgs.push(`--user-data-dir=${profilePath}`);
     const edgeOpts: any = {
