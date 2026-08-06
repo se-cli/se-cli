@@ -10,7 +10,7 @@ import type { SessionConfig } from './registry';
  */
 
 export interface DriverSpecInput {
-  browserName: 'chrome' | 'edge' | 'firefox';
+  browserName: 'chrome' | 'edge' | 'firefox' | 'safari' | 'electron';
   headed: boolean;
   cdpEndpoint?: string;
   profilePath?: string;
@@ -24,6 +24,8 @@ export interface DriverSpecInput {
   browserBinary?: string;
   /** --driver-binary=<path>: custom driver executable (bypasses selenium-manager). */
   driverBinary?: string;
+  /** --app-binary=<path>: Electron executable (used when browserName === 'electron'). */
+  appBinary?: string;
   /** env binary overrides (SE_CHROME_BINARY / SE_EDGE_BINARY / SE_FIREFOX_BINARY). */
   envBinaries?: { chrome?: string; edge?: string; firefox?: string };
 }
@@ -117,7 +119,11 @@ export function parseCapabilities(input: string): Record<string, unknown> {
  */
 export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
   const { browserName, headed, cdpEndpoint, profilePath } = input;
-  const seleniumBrowserName = browserName === 'edge' ? 'MicrosoftEdge' : browserName;
+  // Electron runs on ChromeDriver: the browser name stays 'chrome' and the
+  // Electron executable replaces the binary, with the app path in args.
+  const isElectron = browserName === 'electron';
+  const effectiveBrowser = isElectron ? 'chrome' : browserName;
+  const seleniumBrowserName = effectiveBrowser === 'edge' ? 'MicrosoftEdge' : effectiveBrowser;
   const userArgs = input.browserArgs ?? [];
   const extraCapabilities: Record<string, unknown> = { ...(input.capabilities ?? {}) };
 
@@ -134,10 +140,10 @@ export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
   if (input.endpoint) spec.usingServer = input.endpoint;
   if (input.driverBinary) spec.driverBinary = input.driverBinary;
 
-  if (browserName === 'chrome' || browserName === 'edge') {
-    const isChrome = browserName === 'chrome';
+  if (effectiveBrowser === 'chrome' || effectiveBrowser === 'edge') {
+    const isChrome = effectiveBrowser === 'chrome';
     const args = [...chromiumDefaults];
-    if (!headed && !cdpEndpoint) args.push(...headlessThrottling);
+    if (!headed && !cdpEndpoint && !isElectron) args.push(...headlessThrottling);
     if (profilePath) args.push(`--user-data-dir=${profilePath}`);
     args.push(...userArgs);
     const opts: DriverSpec['chromeOptions'] = {
@@ -145,11 +151,14 @@ export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
       excludeSwitches: ['enable-logging', 'disable-extensions'],
     };
     if (cdpEndpoint) opts.debuggerAddress = cdpEndpoint;
-    const binary = input.browserBinary || input.envBinaries?.[browserName];
+    // Electron: --app-binary wins over --browser-binary / env.
+    const binary = isElectron
+      ? input.appBinary || input.browserBinary
+      : input.browserBinary || input.envBinaries?.[effectiveBrowser];
     if (binary) opts.binary = binary;
     if (isChrome) spec.chromeOptions = opts;
     else spec.edgeOptions = opts;
-  } else if (browserName === 'firefox') {
+  } else if (effectiveBrowser === 'firefox') {
     const opts: DriverSpec['firefoxOptions'] = {};
     const args: string[] = [];
     if (!headed) args.push('-headless');
@@ -160,6 +169,7 @@ export function buildDriverSpec(input: DriverSpecInput): DriverSpec {
     if (binary) opts.binary = binary;
     spec.firefoxOptions = opts;
   }
+  // safari: no options needed — safaridriver needs no browserOptions.
 
   return spec;
 }

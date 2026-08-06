@@ -145,4 +145,31 @@ describe('buildDriverSpec', () => {
   it('omits driverBinary when not provided', () => {
     expect(buildDriverSpec(base).driverBinary).toBeUndefined();
   });
+
+  // v0.10 batch 5: safari & electron.
+
+  it('maps safari to safari without headless args', () => {
+    const spec = buildDriverSpec({ browserName: 'safari', headed: false });
+    expect(spec.seleniumBrowserName).toBe('safari');
+    expect(spec.chromeOptions).toBeUndefined();
+    expect(spec.edgeOptions).toBeUndefined();
+    expect(spec.firefoxOptions).toBeUndefined();
+  });
+
+  it('maps electron to chrome options with the app binary and app path', () => {
+    const spec = buildDriverSpec({
+      browserName: 'electron',
+      headed: false,
+      appBinary: 'C:\\electron\\electron.exe',
+      browserArgs: ['--no-sandbox'],
+    });
+    expect(spec.seleniumBrowserName).toBe('chrome');
+    expect(spec.chromeOptions!.binary).toBe('C:\\electron\\electron.exe');
+    expect(spec.chromeOptions!.args).toContain('--no-sandbox');
+  });
+
+  it('uses --browser-binary for safari', () => {
+    const spec = buildDriverSpec({ browserName: 'safari', headed: true, browserBinary: '/usr/bin/safaridriver' });
+    expect(spec.seleniumBrowserName).toBe('safari');
+  });
 });

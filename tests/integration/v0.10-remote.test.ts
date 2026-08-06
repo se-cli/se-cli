@@ -143,6 +143,23 @@ describe('v0.10: pdf command', () => {
   });
 });
 
+describe('v0.10: safari / electron', () => {
+  (E2E_ENABLED ? it : it.skip)('rejects --browser=electron without --app-binary at the CLI', async () => {
+    const sess = S();
+    const err = await runExpectFail(['open', '--browser=electron'], { SE_CLI_SESSION: sess });
+    expect(err).toMatch(/--app-binary/i);
+  });
+
+  (E2E_ENABLED ? it : it.skip)('fails clearly when --browser=safari is unavailable on this platform', async () => {
+    const sess = S();
+    await run(['open', '--browser=safari'], { SE_CLI_SESSION: sess });
+    const err = await runExpectFail(['title'], { SE_CLI_SESSION: sess });
+    // safaridriver does not exist on Linux/Windows — expect a build error, not a hang.
+    expect(err.length).toBeGreaterThan(0);
+    await run(['close'], { SE_CLI_SESSION: sess }).catch(() => {});
+  });
+});
+
 describe('v0.10: --browser-args / --capabilities pass-through', () => {
   (E2E_ENABLED ? it : it.skip)('opens a real Edge session with custom args and capabilities', async () => {
     const sess = S();
