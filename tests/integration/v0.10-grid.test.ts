@@ -34,10 +34,14 @@ async function probeRemoteDriver(): Promise<RemoteProbe | null> {
     const { binaryPaths } = require('selenium-webdriver/common/seleniumManager');
     const r = binaryPaths(['--browser', 'chrome', '--output', 'json']);
     driverPath = r.driverPath || null;
-  } catch {
+  } catch (e: any) {
+    console.error('[grid-remote] selenium-manager failed:', e.message);
     return null;
   }
-  if (!driverPath) return null;
+  if (!driverPath) {
+    console.error('[grid-remote] no chromedriver path resolved');
+    return null;
+  }
 
   const proc = spawn(driverPath, ['--port=0'], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
   let output = '';
@@ -50,9 +54,13 @@ async function probeRemoteDriver(): Promise<RemoteProbe | null> {
     await sleep(250);
     const m = output.match(/started successfully on port (\d+)/);
     if (m) port = Number(m[1]);
-    if (proc.exitCode !== null) return null; // driver exited early
+    if (proc.exitCode !== null) {
+      console.error('[grid-remote] chromedriver exited early, code=', proc.exitCode, 'output=', output.slice(0, 400));
+      return null; // driver exited early
+    }
   }
   if (port === null) {
+    console.error('[grid-remote] no port parsed from:', output.slice(0, 400));
     proc.kill();
     return null;
   }
@@ -77,10 +85,12 @@ async function probeRemoteDriver(): Promise<RemoteProbe | null> {
       const j = (await resp.json()) as any;
       await fetch(`http://127.0.0.1:${port}/session/${j.value.sessionId}`, { method: 'DELETE' }).catch(() => {});
     } else {
+      console.error('[grid-remote] probe session failed, status=', resp.status, await resp.text().catch(() => ''));
       proc.kill();
       return null;
     }
-  } catch {
+  } catch (e: any) {
+    console.error('[grid-remote] probe session threw:', e.message);
     proc.kill();
     return null;
   }
