@@ -103,29 +103,33 @@ jobs:
       # authorizes WebDriver automation; selenium spawns its own
       # safaridriver process instead.
 
-      # The safari job runs only the v0.10-remote suite: lifecycle
-      # exercises CDP/emulation features safaridriver does not support.
+      # The safari job runs the v0.10-remote suite plus the safari and
+      # grid suites: lifecycle exercises CDP/emulation features that
+      # safaridriver does not support, so it stays out of the safari job.
+      # The grid suite's real-remote tests use a locally spawned
+      # chromedriver as a Grid-node-equivalent endpoint (macOS runners
+      # ship Chrome), and its mock-hub tests run anywhere.
       - name: Run integration tests (Safari)
         if: matrix.browser == 'safari'
         id: integration-test-safari
-        run: npx vitest run tests/integration/v0.10-remote.test.ts
+        run: npx vitest run tests/integration/v0.10-remote.test.ts tests/integration/v0.10-safari.test.ts tests/integration/v0.10-grid.test.ts
       - name: Run integration tests
         if: matrix.browser != 'safari'
         id: integration-test
         env:
           SE_FIREFOX_BINARY: ${{ matrix.browser == 'firefox' && (runner.os == 'Linux' && steps.firefox-linux.outputs.firefox-path || steps.firefox-win.outputs.firefox-path) || '' }}
-        run: npx vitest run tests/integration/lifecycle.test.ts tests/integration/v0.10-remote.test.ts
+        run: npx vitest run tests/integration/lifecycle.test.ts tests/integration/v0.10-remote.test.ts tests/integration/v0.10-grid.test.ts
 
       # Retry integration tests once on failure — browser driver crashes
       # (e.g. Windows chromedriver 0xC0000142) are often transient.
       - name: Retry integration tests on failure (Safari)
         if: failure() && steps.integration-test-safari.outcome == 'failure'
-        run: npx vitest run tests/integration/v0.10-remote.test.ts
+        run: npx vitest run tests/integration/v0.10-remote.test.ts tests/integration/v0.10-safari.test.ts tests/integration/v0.10-grid.test.ts
       - name: Retry integration tests on failure
         if: failure() && steps.integration-test.outcome == 'failure'
         env:
           SE_FIREFOX_BINARY: ${{ matrix.browser == 'firefox' && (runner.os == 'Linux' && steps.firefox-linux.outputs.firefox-path || steps.firefox-win.outputs.firefox-path) || '' }}
-        run: npx vitest run tests/integration/lifecycle.test.ts tests/integration/v0.10-remote.test.ts
+        run: npx vitest run tests/integration/lifecycle.test.ts tests/integration/v0.10-remote.test.ts tests/integration/v0.10-grid.test.ts
       - name: Upload screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4
