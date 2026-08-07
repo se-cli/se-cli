@@ -97,11 +97,12 @@ async function probeRemoteDriver(): Promise<RemoteProbe | null> {
   return { port, proc };
 }
 
-let remote: RemoteProbe | null = null;
-beforeAll(async () => {
-  if (!E2E_ENABLED) return;
-  remote = await probeRemoteDriver();
-}, 60000);
+// Top-level await: the remote probe must complete BEFORE the per-test
+// gates (E2E_ENABLED && REMOTE) are evaluated. In vitest, test
+// registration happens at module load, so a beforeAll-set flag would
+// always be seen as null by those gates.
+const remote: RemoteProbe | null = E2E_ENABLED ? await probeRemoteDriver() : null;
+const REMOTE = remote !== null;
 afterAll(async () => {
   remote?.proc.kill();
 }, 10000);
@@ -337,7 +338,6 @@ describe('v0.10 grid: attach command', () => {
   // commands through the remote driver (navigation, interaction, cookies).
   // Skipped automatically when the local environment cannot create a
   // session through a child-spawned driver (see probeRemoteDriver).
-  const REMOTE = remote !== null;
   (E2E_ENABLED && REMOTE ? it : it.skip)('attaches to a real remote WebDriver and runs commands', async () => {
     const sess = S();
     const endpoint = `http://127.0.0.1:${remote!.port}`;
