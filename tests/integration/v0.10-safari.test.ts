@@ -47,7 +47,13 @@ async function run(args: string[], env: Record<string, string> = {}): Promise<st
   return stdout;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 async function open(url: string, sess: string): Promise<void> {
+  // safaridriver allows exactly one paired session at a time and takes a
+  // moment to release the pairing after a session ends — spacing the opens
+  // avoids "already paired with another WebDriver session" between tests.
+  await sleep(400);
   await run(['open', url, '--browser=safari'], { SE_CLI_SESSION: sess });
 }
 

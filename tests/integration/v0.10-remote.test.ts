@@ -166,17 +166,10 @@ describe('v0.10: pdf command', () => {
 });
 
 describe('v0.10: safari', () => {
-  // Real Safari sessions run only on macOS (safaridriver ships with macOS).
-  const SAFARI_AVAILABLE = E2E_ENABLED && process.platform === 'darwin' && RESOLVED_BROWSERS.includes('safari');
-  (SAFARI_AVAILABLE ? it : it.skip)('opens a real Safari session and navigates', async () => {
-    const sess = S();
-    await run(['open', EXAMPLE_URL(), '--browser=safari'], { SE_CLI_SESSION: sess });
-    const title = (await run(['--raw', 'title'], { SE_CLI_SESSION: sess })).trim();
-    expect(title.length).toBeGreaterThan(0);
-    const url = (await run(['--raw', 'url'], { SE_CLI_SESSION: sess })).trim();
-    expect(url).toContain('/example.html');
-    await run(['close'], { SE_CLI_SESSION: sess });
-  });
+  // Real Safari session coverage moved to tests/integration/v0.10-safari.test.ts
+  // (8 tests covering the full safaridriver capability baseline). Running a
+  // real session here too would race safaridriver's single-session pairing
+  // with that suite, so the real-session test is skipped here.
 
   // On non-macOS platforms (CI: ubuntu/windows), safaridriver does not
   // exist — the session must fail cleanly instead of hanging.
