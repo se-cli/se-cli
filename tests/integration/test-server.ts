@@ -107,7 +107,17 @@ export function startTestServer(fixturesDir?: string): Promise<TestServer> {
             return `${baseUrl}/${file.replace(/^\//, '')}`;
           },
           close() {
-            return new Promise<void>((r, j) => server.close(err => err ? j(err) : r()));
+            return new Promise<void>((r, j) => {
+              // Force-close keep-alive connections (Node 18.2+). Browser
+              // sessions — especially Safari — may leave idle keep-alive
+              // sockets open after the WebDriver session ends; without this,
+              // server.close() hangs until the sockets time out and hooks
+              // (e.g. afterAll with a 10s budget) fail.
+              if (typeof (server as any).closeAllConnections === 'function') {
+                (server as any).closeAllConnections();
+              }
+              server.close((err) => (err ? j(err) : r()));
+            });
           },
         });
       } else {
