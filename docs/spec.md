@@ -730,6 +730,10 @@ never match — emphasized as a differentiated stronghold rather than a passing 
 > Basic navigation/interaction/screenshot/storage commands work; network interception,
 > console logs, and BiDi features are unavailable.
 >
+> **Safari verified surface (integration-tested on macOS CI)**: open/goto/title/url,
+> snapshot + click by ref, link navigation, eval (executeScript), cookie set/get,
+> localStorage via eval, screenshot. Coverage: `tests/integration/v0.10-safari.test.ts`.
+>
 > **Edge IE mode limitations**: Windows Edge Enterprise only; IE mode must be enabled via
 > policy. Network interception, Shadow DOM, emulation, and recording unavailable.
 

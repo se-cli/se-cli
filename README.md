@@ -426,6 +426,21 @@ google-chrome --remote-debugging-port=9222
 se-cli open --cdp=http://localhost:9222
 ```
 
+### Connect to a Grid / Remote WebDriver (v0.10)
+
+```bash
+# Attach to a Selenium Grid 4 hub or any remote WebDriver endpoint
+se-cli open --browser=chrome --endpoint=http://localhost:4444/wd/hub
+# ...or via the grid alias
+se-cli grid attach --endpoint=http://localhost:4444/wd/hub
+
+# Check a Grid's health (nodes, slots, browsers)
+se-cli grid status http://localhost:4444/wd/hub
+
+# Split a browser list round-robin across CI shards
+se-cli grid distribute --shard=1/4 --browsers=chrome,edge,firefox,safari
+```
+
 ### Scripting with --raw
 
 ```bash
@@ -809,6 +824,8 @@ src/
 | Chrome  | ✅       | ✅     | ✅         |
 | Edge    | ✅       | ✅     | ✅         |
 | Firefox | ✅       | ✅     | ❌         |
+| Safari  | ❌       | ✅     | ❌         |
+| Grid/Remote (`--endpoint`) | — | — | — |
 
 ## Comparison with playwright-cli
 
@@ -820,8 +837,9 @@ src/
 | Shadow DOM | Full | Open shadow roots |
 | Test runner attach | Yes (Playwright test) | No (long-term goal) |
 | Tracing | Full | Not planned |
-| Multi-browser | Chromium only | Chrome + Edge + Firefox |
-| Real Safari | No | Possible via Safari driver |
+| Multi-browser | Chromium only | Chrome + Edge + Firefox + Safari (macOS) |
+| Real Safari | No | Yes — `--browser=safari` via safaridriver (macOS only) |
+| Selenium Grid / remote | No | Yes — `grid status\|attach\|distribute`, `--endpoint` |
 
 ## Roadmap
 

@@ -231,6 +231,12 @@ se-cli config init
 se-cli --raw <cmd>              # Output only the value
 se-cli --json <cmd>             # Structured JSON output
 se-cli -s=<name> <cmd>          # Use named session
+se-cli open --browser=safari    # Browser: chrome|edge|firefox|safari (safari macOS-only, no headless)
+se-cli open --endpoint=<url>    # Connect to a Selenium Grid 4 / remote WebDriver
+se-cli open --browser-args="--disable-gpu --lang=zh-CN"   # Pass-through browser launch args
+se-cli open --capabilities='{"acceptInsecureCerts":true}' # Pass-through W3C capabilities
+se-cli open --browser-binary=<path>  # Custom browser executable (360, UC, Brave, Electron-embedded…)
+se-cli open --driver-binary=<path>   # Custom driver executable (bypasses selenium-manager)
 se-cli click e1 --timeout=10000      # Per-command explicit-wait timeout
 se-cli click e1 --wait=visible        # Wait condition: visible|hidden|enabled|disabled|stable|attached|none|auto
 se-cli click e1 --retry=3             # Retry count (-1 = until timeout)
