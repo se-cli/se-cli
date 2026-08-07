@@ -827,6 +827,19 @@ src/
 | Safari  | ❌       | ✅     | ❌         |
 | Grid/Remote (`--endpoint`) | — | — | — |
 
+**Feature-level support** (which commands work on which browser) is defined
+in the [browser support matrix](docs/spec.md) in `docs/spec.md`. Summary:
+
+- **All browsers (Chrome / Edge / Firefox / Safari)**: navigation, title/url,
+  snapshot/find, click/fill/type/press/select/check, screenshot, eval,
+  cookies, localStorage/sessionStorage, tabs, dialogs, upload, resize.
+- **W3C Actions** (hover/dblclick/drag/keyboard/mousewheel): Chrome / Edge /
+  Firefox fully; **Safari partial** (chains may degrade to single steps).
+- **`pdf`**: Chrome / Edge / Firefox only (safaridriver has no print endpoint).
+- **`console` / `requests` / `route`** (BiDi): Chrome / Edge / Firefox only.
+- **`device` / `emulate` / `--cdp`** (CDP): Chrome / Edge fully; Firefox
+  viewport-only for `device`; Safari none.
+
 ## Comparison with playwright-cli
 
 | Feature | playwright-cli | se-cli |
